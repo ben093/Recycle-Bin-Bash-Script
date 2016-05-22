@@ -1,0 +1,60 @@
+#=============================================================
+#	COURSE:	CSC460, assignment2
+#	PROGRAMMERS: 	Ben (bb), Anthony (av)
+#	MODIFIED BY: Ben, Anthony
+#	LAST MODIFIED DATE:	2/18/2016
+#	DESCRIPTION:	This script simulates a recycle bin.
+#	NOTE: 50% Ben (case1, case2, case3) 
+#		  50% Anthony (null args check, -l check, -p check)
+#	FILES:	junk
+#	INSTRUCTION FOR COMPILATION AND EXECUTION:
+#	1. Type cp ./junk ~/bin
+#	2. Type chmod u+x ~/bin/junk
+#	3. type: junk [ -p / -l ] [ fileName1 fileName2 ...]
+#=============================================================
+
+#!/bin/bash
+
+if [ -z $1 ]; then
+   echo "Usage: junk [ -l \ -p ] [fileName1 fileName2 ...]"
+   echo "Argument -l: Displays current contents of the ~/RecycleBin" 
+   echo "     directory, if it exists."
+   echo "Argument -p: Deletes all of the contents in the ~/RecycleBin" 
+   echo "     directory, if it exists."
+   echo "Argument [fileName1 ...]: will attempt to move the files or" 
+   echo "     directories specified in the arguments from the current"
+   echo "     directory to the ~/RecycleBin directory."
+   exit
+elif [ $1 = "-l" ]; then	
+	if [ -d ~/RecycleBin ]; then
+		find ~/RecycleBin/* -name "*"
+	else
+		echo "Directory RecycleBin does not exist."
+	fi
+elif [ $1 = "-p" ]; then
+	if [ -d ~/RecycleBin ]; then		
+		find ~/RecycleBin/* -name "*" -delete
+	else
+		echo "Directory RecycleBin does not exist."
+	fi
+else	
+	#case 2
+	if [[ ! -d ~/RecycleBin && ! -f ~/RecycleBin ]]; then				
+		echo "Directory RecycleBin does not exist. Creating it now."
+		mkdir ~/RecycleBin
+	elif [[ -f ~/RecycleBin ]]; then
+		#case 3
+		echo "~/RecycleBin already exists as a file, a directory cannot be created."
+		exit
+	fi
+	
+	#case 1
+	for object in $@; do
+		if [[ -f $object || -d $object ]]; then
+			echo "$object is a file or directory, moving it."
+			mv $object ~/RecycleBin
+		else
+			echo "$object not found as a file or directory in current directory"
+		fi	
+	done
+fi
